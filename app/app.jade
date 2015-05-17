@@ -1,0 +1,62 @@
+body
+	.container
+		+experiments
+
+template(name="experiments")
+	each experiments
+		+Experiment
+
+template(name="Experiment")
+
+	h1 {{name}}
+	p {{description}}
+	.row
+		+TickerGui ticker=ticker
+	.row
+		h3 adviceBits
+		p acts: {{act}}
+		ul.adviceBits
+			each adviceBits
+				if this
+					li 1
+				else
+					li 0
+	.row
+		.currentItemContainer.col-xs-6
+			h2 Current item:
+			if currentItem
+				p value: {{currentItem.value}}
+				+KnapsackItem(currentItem)
+
+		.knapsackContainer.col-xs-6
+			+Knapsack knapsack
+
+
+template(name="Knapsack")
+	.knapsack(style="width: {{totalWidth}}px")
+		h2 knapsack
+		p value {{totalWeight}}
+		.items
+			each items
+				+KnapsackItem
+				
+
+template(name="KnapsackItem")
+	.knapsack-item(style="width: {{width}}px; background-color: {{color}}")
+
+template(name="TickerGui")
+	.ticker
+		p Counter: {{counter}}
+		.btn-group
+			button.btn.btn-step.btn-primary
+				.glyphicon.glyphicon-step-forward 
+				| Step
+			button.btn.btn-play.btn-default
+				.glyphicon.glyphicon-play 
+				| Play
+			button.btn.btn-stop.btn-warning
+				.glyphicon.glyphicon-stop 
+				| Stop
+			button.btn.btn-reset.btn-danger
+				.glyphicon.glyphicon-fast-backward 
+				| Reset
