@@ -23,7 +23,6 @@ Ticker = class
 			@run()
 
 	stop: ->
-		console.log "stop"
 		@running = no
 
 	step: ->

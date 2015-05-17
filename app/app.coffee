@@ -21,12 +21,12 @@ Knapsack = class
 
 	addItem: (item) ->
 
-		if @totalValue() + item.value <= @size
+		if @yield() + item.value <= @size
 			@items.push item
 			@dep.changed()
 		else
 			console.log "item does not fit"
-	totalValue: -> 
+	yield: -> 
 		_.reduce @getItems(), ((total, item) -> total+item.value), 0
 	getItems: ->
 		@dep.depend()
@@ -41,7 +41,7 @@ Knapsack = class
 if Meteor.isClient
 	greedy = (item) -> if item? then yes else no
 
-	Experiment = class
+	Algorithm = class
 		constructor: ->
 			@adviceBits = new ReactiveVar
 			@act = new ReactiveVar
@@ -58,15 +58,18 @@ if Meteor.isClient
 	Template.experiments.helpers
 		experiments: ->
 			[
-				name: "Greedy G"
-				description: "G archieves at least 1-beta, where beta is here 0.5"
-				Experiment: class extends Experiment
+				name: -> "Greedy G"
+				description: -> "G archieves at least 1-beta, where beta is here #{@beta}"
+				beta: 0.8
+				Algorithm: class extends Algorithm
 					decide: greedy
+
 					
 			,
 				name: "AONE - with one advice bit"
 				description: "AONE is 2-competitive"
-				Experiment: class extends Experiment
+				beta: 0.55
+				Algorithm: class extends Algorithm
 					oracle: (items) ->
 						[_.some items, (item) -> item.value > 0.5]
 					decide: (item)-> 
@@ -88,51 +91,91 @@ if Meteor.isClient
 			]
 
 
-	createItems = (number = 10, totalSize = 1, maxSize=0.6) ->
+	createItems = ({beta, maxSize}) ->
 		items = []
-		for index in [number..0]
-			value = Math.random()*maxSize
+		beta ?= 0.5
+		maxSize ?= 1
+		totalSize = 0
+		index = 0
+		until totalSize >= maxSize
+			
+			value = Math.random()*beta
+			totalSize += value
 			items.push {index, value}
-		return items
+			index++
+		return items.reverse() # we later pop the elements out (from the end) because it is faster
 
 	Template.Experiment.onCreated ->
 		
 		@items = []
 		@knapsack = new Knapsack 
 		@currentItem = new ReactiveVar
-		@experiment = new @data.Experiment
-
-		setup = =>
-			@currentItem.set null
+		@algorithm = new @data.Algorithm
+		@yieldHistory = 
+			history: []
+			dep: new Tracker.Dependency
+			add: (yieldValue) ->
+				@worstYield = Math.min @worstYield ? yieldValue, yieldValue
+				@bestYield = Math.max @bestYield ? yieldValue, yieldValue
+				@history.push yieldValue
+				@dep.changed()
+			size: ->
+				@dep.depend()
+				@history.length
+			worst: ->
+				@dep.depend()
+				@worstYield
+			best: ->
+				@dep.depend()
+				@bestYield
+			avg: ->
+				@dep.depend()
+				if @history.length > 0
+					(_.reduce @history, (total, value) -> total+value)/@history.length
+			reset: ->
+				@history = []
+				@bestYield = null
+				@worstYield = null
+				@dep.changed()
+		resetExperiment = =>
 			@knapsack.reset()
-			@items = createItems()
-			@experiment.reset?()
-			@experiment.askOracle? @items
-		setup()
+			@items = createItems beta: @data.beta
+			@currentItem.set @items.pop()
+			@algorithm.reset?()
+			@algorithm.askOracle? @items
+		do reset = =>
+			@yieldHistory.reset()
+			resetExperiment()
+		
 		@ticker = new Ticker 
 			reset: =>
-				
-				setup()
+				reset()
 
 			turn: =>
 				# 1. step: fetch new item
 				# 2. step: put it in knapsack
-				newItem = @items.pop()
-				lastItem = @currentItem.get()
-				@currentItem.set newItem
-				if lastItem? and @experiment.decide lastItem
-					@knapsack.addItem lastItem
-		@ticker.setTimeout 500
+				
+				item = @currentItem.get()
+				if item?
+					if @algorithm.decide item
+						@knapsack.addItem item
+					@currentItem.set @items.pop()
+				else
+					# no more items
+					
+					@yieldHistory.add @knapsack.yield()
+					resetExperiment()
+					
 
 	
 	Template.Experiment.helpers 
-		adviceBits: -> Template.instance().experiment.adviceBits.get()
-		act: -> Template.instance().experiment.act.get()
+		adviceBits: -> Template.instance().algorithm.adviceBits.get()
+		act: -> Template.instance().algorithm.act.get()
 		knapsack: -> Template.instance().knapsack
 		ticker: -> Template.instance().ticker
 		currentItem: ->Template.instance().currentItem?.get()
+		yieldHistory: -> Template.instance().yieldHistory
 	
-			
 	Template.Knapsack.helpers
 		totalWidth: ->
 			@size * Constants.SCALE+1 #1 is for rounding issues
@@ -149,7 +192,13 @@ if Meteor.isClient
 		counter: -> @ticker.getCounter()
 	Template.TickerGui.events
 		'click .btn-step': -> @ticker.step()
-		'click .btn-play': -> @ticker.play()
+		'click .btn-play': -> 
+			@ticker.setTimeout 100
+			@ticker.play()
+		'click .btn-play-fast': ->
+			@ticker.setTimeout 0
+			@ticker.play()
+
 		'click .btn-stop': -> @ticker.stop()
 		'click .btn-reset': -> @ticker.reset()
 

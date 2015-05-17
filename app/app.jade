@@ -10,11 +10,16 @@ template(name="Experiment")
 
 	h1 {{name}}
 	p {{description}}
+	p Number of experiments: {{yieldHistory.size}}
+	p Average yield: {{yieldHistory.avg}}
+	p Best yield: {{yieldHistory.best}}
+	p Worst yield: {{yieldHistory.worst}}
 	.row
 		+TickerGui ticker=ticker
 	.row
-		h3 adviceBits
+		
 		p acts: {{act}}
+		span adviceBits
 		ul.adviceBits
 			each adviceBits
 				if this
@@ -35,7 +40,7 @@ template(name="Experiment")
 template(name="Knapsack")
 	.knapsack(style="width: {{totalWidth}}px")
 		h2 knapsack
-		p value {{totalWeight}}
+		p yield: {{yield}}, items: {{items.length}}
 		.items
 			each items
 				+KnapsackItem
@@ -54,6 +59,9 @@ template(name="TickerGui")
 			button.btn.btn-play.btn-default
 				.glyphicon.glyphicon-play 
 				| Play
+			button.btn.btn-play-fast.btn-default
+				.glyphicon.glyphicon-fast-forward
+				| Play Fast
 			button.btn.btn-stop.btn-warning
 				.glyphicon.glyphicon-stop 
 				| Stop
