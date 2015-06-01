@@ -12,6 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.use('coffeescript',['client','server']);
+  api.use('reactive-var',['client','server']);
   api.versionsFrom('1.1.0.2');
   api.addFiles('ticker.coffee');
   api.export("Ticker");

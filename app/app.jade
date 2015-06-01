@@ -15,23 +15,26 @@ template(name="Experiment")
 	p Best yield: {{yieldHistory.best}}
 	p Worst yield: {{yieldHistory.worst}}
 	.row
-		+TickerGui ticker=ticker
+		.col-xs-12
+			+TickerGui ticker=ticker
 	.row
-		
-		p acts: {{act}}
-		span adviceBits
-		ul.adviceBits
-			each adviceBits
-				if this
-					li 1
-				else
-					li 0
+		.col-xs-12
+			if act
+				p acts: {{act}}
+			p adviceBits: 
+				span.adviceBits=adviceBits
+			p Number of items: {{numberOfItems}}
+
 	.row
 		.currentItemContainer.col-xs-6
 			h2 Current item:
 			if currentItem
 				p value: {{currentItem.value}}
 				+KnapsackItem(currentItem)
+				if willMatch
+					p will match
+				else
+					p will not match
 
 		.knapsackContainer.col-xs-6
 			+Knapsack knapsack
