@@ -3,7 +3,9 @@ body
 	.container
 		.page-header
 			h1 Advice Complexity of the Online-Knapsack-Problem
+		+complexityChart
 		+experiments
+		
 head
 	title Advice Complexity of the Online-Knapsack-Problem
 template(name="experiments")
@@ -90,6 +92,9 @@ template(name="Knapsack")
 
 template(name="KnapsackItem")
 	.knapsack-item(style="width: {{width}}px; background-color: {{color}}")
+
+template(name="complexityChart")
+	+highchartsHelper chartId="test" chartWidth="100%" chartHeight="400px" chartObject=chartObject
 
 template(name="TickerGui")
 	.ticker
