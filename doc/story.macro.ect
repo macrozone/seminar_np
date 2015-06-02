@@ -1,0 +1,29 @@
+\begin{center}
+\begin{tabular}{|lp{12cm}|}
+\hline
+
+\textbf{\customlabel{sc-<%- @number %>}{Sc-<%- @number %>}} & 
+
+<%- @title %>
+
+\\\hline
+
+\textit{Story} & <%-@description%> \\
+
+
+\hline
+
+<% if @accCriteria.length > 0 : %>
+	\textit{Akzeptanzkriterien:}
+
+	<% for criteria in @accCriteria :%>
+	 & $\Box$ <%- criteria %> \\
+	<% end %>
+	\hline
+<% end %>
+
+\textit{Priorität} & <%- @priority %> \\
+\hline
+\end{tabular}
+\end{center}
+

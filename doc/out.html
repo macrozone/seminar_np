@@ -1,0 +1,608 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \usepackage{xltxtra,xunicode}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
+  \newcommand{\euro}{€}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\ifxetex
+  \usepackage[setpagesize=false, % page size defined by xetex
+              unicode=false, % unicode breaks when used with xetex
+              xetex]{hyperref}
+\else
+  \usepackage[unicode=true]{hyperref}
+\fi
+\hypersetup{breaklinks=true,
+            bookmarks=true,
+            pdfauthor={},
+            pdftitle={},
+            colorlinks=true,
+            citecolor=blue,
+            urlcolor=blue,
+            linkcolor=magenta,
+            pdfborder={0 0 0}}
+\urlstyle{same}  % don't use monospace font for urls
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\setcounter{secnumdepth}{0}
+
+\date{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  _____   ____  _____                                          %
+% |_   _| /  __||  __ \    Institute of Computitional Physics   %
+%   | |  |  /   | |__) |   Zuercher Hochschule Winterthur       %
+%   | |  | (    |  ___/    (University of Applied Sciences)     %
+%  _| |_ |  \__ | |        8401 Winterthur, Switzerland         %
+% |_____| \____||_|                                             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Project     : LaTeX doc Vorlage für Windows ProTeXt mit TexMakerX
+% Title       : 
+% File        : header.tex Rev. 00
+% Date        : 23.4.12
+% Author      : Remo Ritzmann
+% Feedback bitte an Email: remo.ritzmann@pfunzle.ch
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\documentclass[twoside,10pt,parskip=half,ngerman]{scrreprt}
+
+%***********************************************************************
+% include some libs
+%***********************************************************************
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{fancyhdr}
+\usepackage{rotating}
+\usepackage{titlesec}
+\usepackage{mathptmx}
+ \usepackage{helvet}
+\usepackage[scaled]{uarial}
+\renewcommand*\familydefault{\sfdefault} %% Only if the base font of the document is to be sans serif
+\usepackage[T1]{fontenc}
+\usepackage{ngerman}
+\usepackage{textcomp}
+\usepackage[squaren]{SIunits}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{geometry}
+\usepackage[absolute]{textpos}
+\usepackage{makeidx}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{pdfpages}
+\usepackage{tabularx}
+\usepackage{lmodern}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{scrhack}
+\usepackage{wallpaper} %\ThisTileWallPaper{}
+\usepackage[super,square]{natbib} %für BibTeX Literaturverzeichnis
+
+
+
+
+%***********************************************************************
+% various styles
+%***********************************************************************	
+
+%create index
+\makeindex
+
+%define pagestyle
+\pagestyle{fancy}
+
+%use sans-serif font 
+%\renewcommand{\familydefault}{\sfdefault}
+
+%define page margin
+\geometry{a4paper, top=30mm, left=30mm, right=30mm, bottom=30mm,headsep=10mm,footskip=10mm}
+
+%textpos parameter
+\setlength{\TPHorizModule}{30mm}
+\setlength{\TPVertModule}{\TPHorizModule}
+\textblockorigin{10mm}{10mm} % start everything near the top-left corner
+\setlength{\parindent}{0pt}
+
+%horizontal lines for titlepage 
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+%reference to source items inlc source number
+\newcommand{\srcref}[1]{\nameref{src:#1} \cite{#1}}
+
+%header / footer 
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+\renewcommand{\arraystretch}{1.5}
+
+\fancyhead[LO,RE]{} %clear headings for contents 
+\fancyhead[RO,LE]{\nouppercase{\rightmark}} %right odd pages and left even pages
+\fancyhead[LO,RE]{\MakeUppercase{\leftmark}} %left odd pages and right even pages
+\fancyfoot[LE,RO]{\thepage} %page numbering
+\fancyfoot[C]{} %clear centered page numbering 
+
+%define some colors
+\definecolor{gray}{rgb}{0.95,0.95,0.95}
+\definecolor{darkgray}{rgb}{0.4,0.4,0.4}
+%listing colors
+\definecolor{lgray}{RGB}{250,250,250}
+\definecolor{lgreen}{RGB}{63,127,95}
+\definecolor{lred}{RGB}{127,0,85}
+\definecolor{lblue}{RGB}{42,0,255}
+
+%***********************************************************************
+% listing
+%***********************************************************************
+
+\lstset{		
+		basicstyle=\small\ttfamily,
+		frame=single,
+		numbers=left,	
+		numberstyle=\tiny,
+		%firstnumber=auto,
+		numberblanklines=true,
+		captionpos=b,
+		extendedchars=true,
+		float=ht,
+		showtabs=false,
+		tabsize=2,
+		showspaces=false,
+		showstringspaces=false,
+		breaklines=true,
+		%prebreak=\Righttorque,
+		backgroundcolor=\color{lgray},
+		keywordstyle=\color{lred}\bfseries, 
+		commentstyle=\color{lgreen}\ttfamily,
+%		morekeywords={printstr, printhexln},
+		stringstyle=\color{lblue},
+		xleftmargin=0.5cm,
+		xrightmargin=0.5cm
+}
+
+\lstloadlanguages{C++}
+
+
+\makeatletter
+\newcommand{\customlabel}[2]{%
+   \protected@write \@auxout {}{\string \newlabel {#1}{{#2}{\thepage}{#2}{#1}{}} }%
+   \hypertarget{#1}{#2}
+}
+\makeatother
+%\lstdefinelanguage{xc}{
+%     keywords={printstr, printhexln, attributes, class, classend, do, empty, endif, endwhile, fail, function, functionend, if, implements, in, inherit, inout, not, of, operations, out, return, set, then, types, while, use},
+%     keywordstyle=\color{lred}\bfseries,
+%     ndkeywords={},
+%     ndkeywordstyle=\color{yellow}\bfseries,
+%     identifierstyle=\color{black},
+%     sensitive=false,
+%     comment=[l]{//},
+%     commentstyle=\color{lgreen}\ttfamily,
+%     string=[l]{"},
+%     stringstyle=\color{lblue}\ttfamily
+%  }
+
+
+
+
+\begin{document}
+
+{
+\hypersetup{linkcolor=black}
+\setcounter{tocdepth}{}
+\tableofcontents
+}
+<p></p>
+<h1 id="begriffe"><span class="header-section-number">1</span> Begriffe</h1>
+<h2 id="online-probleme"><span class="header-section-number">1.1</span> Online-Probleme</h2>
+<p>Online-Probleme sind Probleme, bei denen die Eingabe zu Beginn nicht vollständig bekannt sind, sondern laufend hinzukommen. Sie sind eine wichtige Klasse von Problemen und treten beispielsweise bei der Planung von (CPU-)-Jobs / Scheduling auf.</p>
+<p>Definition: Online Maximierungs-Problem</p>
+<p>Online-Probleme bestehen aus Menge von Eingaben <span class="math">ℐ</span>, Eingabe <span class="math"><em>I</em> ∈ ℐ</span> mit <span class="math"><em>I</em> = (<em>x</em><sub>1</sub>, ..., <em>x</em><sub><em>n</em></sub>)</span>, sowie einer <span class="math">$\mathit(gain)$</span>-Funktion. Zu jeder Eingabe kann eine Menge von Ausgaben mit jeweils O=(y_1, ..., y_n) zugeordnert werden. <span class="math"><em>g</em><em>a</em><em>i</em><em>n</em><em>(</em><em>I</em><em>,</em> <em>O</em><em>)</em></span> ordnet dabei zu jeder Eingabe und passender Ausgabe eine positive, reelle Zahl zu. Für jede Eingabe I nennen wir diejenige Lösung O eine <em>optimale Lösung von I</em>, für welche <span class="math"><em>g</em><em>a</em><em>i</em><em>n</em><em>(</em><em>I</em><em>,</em> <em>O</em><em>)</em></span> maximal ist. Wir schreiben diese als </p>
+<p>Definition: Online-Algorithmus mit <em>Advice</em></p>
+<h2 id="advice-komplexität"><span class="header-section-number">1.2</span> Advice-Komplexität</h2>
+<p></p>
+<h1 id="das-einfache-online-rucksackproblem"><span class="header-section-number">2</span> Das einfache Online-Rucksackproblem</h1>
+<h2 id="greedy-ansatz"><span class="header-section-number">2.1</span> Greedy-Ansatz</h2>
+<p><span class="math">1 − <em>β</em></span></p>
+<h2 id="untere-grenze-für-optimalität"><span class="header-section-number">2.2</span> Untere Grenze für Optimalität</h2>
+<p>n-1 advice-bits</p>
+<h2 id="aone---2-competitive"><span class="header-section-number">2.3</span> AONE - 2-competitive</h2>
+<h2 id="grenzen-für-logn-1-adice-bits"><span class="header-section-number">2.4</span> Grenzen für log(n-1) Adice bits</h2>
+<p><span class="math">2 − <em>ϵ</em></span></p>
+<h2 id="slog"><span class="header-section-number">2.5</span> SLOG</h2>
+<h1 id="vergleich-mit-randomisierten-algorithmen"><span class="header-section-number">3</span> Vergleich mit randomisierten Algorithmen</h1>
+<h2 id="random-bit-rone---4-competive"><span class="header-section-number">3.1</span> 1 Random bit: RONE - 4-competive</h2>
+<h2 id="random-bit-rone---2-competive"><span class="header-section-number">3.2</span> 1 Random bit: RONE' - 2-competive</h2>
+<h2 id="mehr-random-bits-keine-verbesserung"><span class="header-section-number">3.3</span> Mehr Random-bits: keine Verbesserung</h2>
+<p></p>
+<h1 id="ausblick"><span class="header-section-number">4</span> Ausblick</h1>
+<h2 id="rucksackproblem-mit-überfüllen"><span class="header-section-number">4.1</span> Rucksackproblem mit Überfüllen</h2>
+<h2 id="das-gewichtete-online-rucksackproblem"><span class="header-section-number">4.2</span> Das gewichtete Online-Rucksackproblem</h2>
+<h1 id="todo"><span class="header-section-number">5</span> todo:</h1>
+<ul>
+<li>graph von bits / n, sprung-marken</li>
+</ul>
+<h1 id="online-knapsack-problem"><span class="header-section-number">6</span> Online-Knapsack-Problem</h1>
+<pre><code>Constants = 
+    SCALE: 300
+    KNAPSACK_SIZE: 1
+
+roundValue = (value) -&gt; Math.round(value*100)/100</code></pre>
+<h2 id="knapsack"><span class="header-section-number">6.1</span> Knapsack</h2>
+<p>The Knapsack will contain the objects and can return its gain (= the total of items' value)</p>
+<p></p>
+<pre><code>Knapsack = class 
+
+    constructor: -&gt;
+        @size = Constants.KNAPSACK_SIZE
+        @dep = new Tracker.Dependency
+        @reset()
+
+    reset: -&gt;
+
+        @items = []
+        @dep.changed()
+    
+    fits: (item) -&gt; 
+        @gain() + item.value &lt;= Constants.KNAPSACK_SIZE
+
+    addItem: (item) -&gt;
+        if @fits item
+            @items.push item
+            @dep.changed()
+    gain: -&gt; 
+        roundValue _.reduce @getItems(), ((total, item) -&gt; total+item.value), 0
+    getItems: -&gt;
+        @dep.depend()
+        @items
+
+
+experiments = []
+
+Algorithm = class
+    constructor: -&gt;
+        @adviceBits = new ReactiveVar
+        @act = new ReactiveVar
+        @_knapsack = new Knapsack
+    knapsack: -&gt; @_knapsack
+    askOracle: (items) -&gt;
+        if @oracle?
+            @adviceBits.set @oracle items
+            delete item.isPartOfSolution for item in items
+    readAdviceBit: (index) -&gt;
+        @adviceBits.get()?[index]
+    reset: -&gt;
+        @_knapsack.reset()
+        @adviceBits.set null
+        @act.set null
+
+    handle: (item) -&gt;
+        if @decide item 
+            @_knapsack.addItem item 
+            yes
+        else
+            no
+    doAct: (like) -&gt; @act.set like
+    acts: (like) -&gt; @act.get() is like</code></pre>
+<p>Lets start with the greedy aproach. Here, we just take every item we get, if it fits:</p>
+<pre><code>decideGreedy = (item) -&gt; if @knapsack().fits item then yes else no</code></pre>
+<p>and we define an algorithm with it:</p>
+<pre><code>Greedy = class extends Algorithm
+    decide: decideGreedy</code></pre>
+<p>The gain of this algorithm is at least 1-b, where beta is the size of the item with the highest value (weight). Lets do some experiments with it:</p>
+<pre><code>experiments.push
+    name: -&gt; &quot;Greedy G&quot;
+    description: -&gt; &quot;G archieves at least 1-beta, where beta is here #{@beta}&quot;
+    beta: 0.5
+    Algorithm: Greedy
+
+experiments.push
+    name: -&gt; &quot;Greedy G&quot;
+    description: -&gt; &quot;G archieves at least 1-beta, where beta is here #{@beta}&quot;
+    beta: 0.2
+    Algorithm: Greedy
+
+experiments.push
+    name: -&gt; &quot;Greedy G&quot;
+    description: -&gt; &quot;G archieves at least 1-beta, where beta is here #{@beta}&quot;
+    beta: 0.8
+    Algorithm: Greedy</code></pre>
+<h2 id="advice-bits"><span class="header-section-number">6.2</span> Advice bits</h2>
+<p>Imaging you had an oracle, that would know all items that will come. How many bits of information from this oracle would you need to get an optimal solution? And for a given amount of these advice bits, how good would your algorithm perform?</p>
+<p>Let's start with the first question.</p>
+<p>Consider an algorithm with an oracle, that would give us a bit for every item coming with</p>
+<ul>
+<li>value 1 if the item is part of the solution</li>
+<li>value 0 if the item does not belong to the solution</li>
+</ul>
+<p>We now define an algorithm for that.</p>
+<p>Note: The items are prepared in a way, that some are allready marked as solution. That makes it easier to define the oracle here:</p>
+<pre><code>TotalInformation = class extends Algorithm
+    oracle: (items) -&gt;
+        bits = []
+        for item in items
+            bits[item.index] = if item.isPartOfSolution then 1 else 0
+        # we do not need the last (n-1)
+        bits.pop()
+        return bits</code></pre>
+<p>The decision is now easy. If we have a bit (yes / no), we use it:</p>
+<pre><code>    decide: (item) -&gt;
+        adviceBit = @readAdviceBit item.index
+        if adviceBit? then adviceBit else yes</code></pre>
+<p>Lets do an experiment with it:</p>
+<pre><code>experiments.push
+    name: -&gt; &quot;Total Information&quot;
+    beta: 0.4
+    Algorithm: TotalInformation</code></pre>
+<h2 id="advice-bit"><span class="header-section-number">6.3</span> 1 Advice bit</h2>
+<p>What's the best gain if we had only 1 advice bit?</p>
+<p>Let's do an experiment where we have an oracle that gives us one bit:</p>
+<pre><code>AONE = class extends Algorithm
+    oracle: (allItems) -&gt; [ _.some allItems, (item) -&gt; item.value &gt; 0.5 ] # array with one bit</code></pre>
+<p>The bit tells us:</p>
+<ul>
+<li>1: There exists an item with a size &gt; 0.5</li>
+<li>0: There is no such item</li>
+</ul>
+<p>If the bit is 0, the algorithm acts greedy (like before). If the bit is 1, the algorithm waits until the item with size &gt; 0.5 appears and will start acting greedyly:</p>
+<pre><code>    decide: (item)-&gt; 
+        adviceBit = @readAdviceBit item.index
+        if adviceBit? # existance
+            if adviceBit is false then @doAct &quot;greedy&quot; else @doAct &quot;wait&quot;
+        if @acts &quot;greedy&quot; then decideGreedy.call @, item else @wait item
+        
+    wait: (item) -&gt;
+        if item?.value &gt; 0.5
+            @doAct &quot;greedy&quot;
+            decideGreedy.call @, item
+        else
+            no</code></pre>
+<p>We do an experiment with a max size of one item of 0.55:</p>
+<pre><code>experiments.push
+    name: &quot;AONE - with one advice bit&quot;
+    description: &quot;AONE is 2-competitive&quot;
+    beta: 0.55
+    Algorithm: AONE</code></pre>
+<h2 id="random-online-algorithms"><span class="header-section-number">6.4</span> Random Online-Algorithms</h2>
+<p>Obviously in real online-problems, we do not have an omniscient oracle. But we can use the idea of the oracle and just guess the advice bits <em>randomly</em>.</p>
+<p>We can then estimate the competitiveness of this *randomized online-algorithm.</p>
+<h3 id="rone---aone-with-random-advice-bit"><span class="header-section-number">6.4.1</span> RONE - AONE with random advice bit</h3>
+<p>Let's start with AONE from the previous experiment, but guess the adviceBit randomly:</p>
+<pre><code>RONE = class extends AONE
+    oracle: -&gt;
+        [Math.random() &lt; 0.5]</code></pre>
+<p>If we guess wrong, we might get a lower gain then 0.5 or even 0, if the adviceBit is 1 and we have no item with size &gt; 0.5.</p>
+<p>So while we have</p>
+<pre><code>experiments.push
+    name: &quot;RONE - one random bit&quot;
+    description: &quot;Is 4-competitive in expectation&quot;
+    beta: 0.55
+    Algorithm: RONE
+
+A1 = Greedy
+A2 = class extends Algorithm
+    reset: -&gt;
+        super
+        @a1 = new A1
+        @doAct &quot;simulateA1&quot;
+        
+    decide: (item) -&gt;
+        if @acts &quot;simulateA1&quot;
+            if @a1.handle item
+                return no
+            else
+                @doAct &quot;greedy&quot;
+                return @decide item
+        else if @acts &quot;greedy&quot;
+            return decideGreedy.call @, item
+
+
+RONE2 = class extends Algorithm
+    constructor: -&gt;
+        @a1 = new A1
+        @a2 = new A2
+        super
+    oracle: -&gt; [Math.random() &lt; 0.5]
+    reset: -&gt;
+        super
+        @a1.reset()
+        @a2.reset()
+    knapsack: -&gt; @algorithm().knapsack()
+    handle: (item) -&gt;
+        adviceBit = @readAdviceBit item.index
+        if adviceBit? # existance
+            if adviceBit then @doAct &quot;A1&quot; else @doAct &quot;A2&quot;
+        @algorithm().handle item
+
+    algorithm: -&gt;
+        if @acts &quot;A1&quot; then @a1 else @a2
+
+
+experiments.push
+    name: &quot;RONE2 - one random bit&quot;
+    description: &quot;Is 2-competitive in expectation&quot;
+    beta: 0.55
+    Algorithm: RONE2
+        
+createItems = ({beta, maxSize}) -&gt;
+    
+    items = []
+    beta ?= 0.5
+    maxSize ?= 1
+    totalSize = 0
+    
+    loop 
+        randomValue = -&gt; roundValue Math.random()*beta
+        value = randomValue()
+        if totalSize+value &lt; maxSize
+            totalSize += value
+            items.push {value, isPartOfSolution: yes}
+        else
+            # add one that fits exactly
+            items.push 
+                value: roundValue maxSize - totalSize
+                isPartOfSolution: yes
+            # add the one that does not fit
+            items.push {value}
+
+
+            break
+
+
+    items = _.shuffle items
+    for item, index in items
+        item.index = index
+    return items.reverse() # we later pop the elements out (from the end) because it is faster
+
+
+Template.experiments.helpers
+    experiments: -&gt; experiments
+
+
+Template.Experiment.onCreated -&gt;
+    
+    @items = []
+    
+    @currentItem = new ReactiveVar
+    @numberOfItems = new ReactiveVar
+    @algorithm = new @data.Algorithm
+    @gainHistory = 
+        history: []
+        dep: new Tracker.Dependency
+        add: (gainValue) -&gt;
+            if gainValue &gt; 0
+                @worstGain = Math.min @worstGain ? gainValue, gainValue
+            @bestGain = Math.max @bestGain ? gainValue, gainValue
+            @history.push gainValue
+            @dep.changed()
+        size: -&gt;
+            @dep.depend()
+            @history.length
+        worst: -&gt;
+            @dep.depend()
+            @worstGain
+        best: -&gt;
+            @dep.depend()
+            @bestGain
+        competitiveCount: -&gt;
+            @dep.depend()
+            _.countBy @history, (value) -&gt;
+                
+                if value is 1
+                    &quot;1-competitive&quot;
+                else if 0.5 &lt;= value &lt; 1
+                    &quot;2-competitive&quot;
+                else if 0.25 &lt;= value &lt; 0.5
+                    &quot;4-competitive&quot;
+                else
+                    &quot;non-competitive&quot;
+                
+        
+        competitivePercentage: (cGroup)-&gt;
+            @dep.depend()
+            if @history.length &gt; 0
+                roundValue 100 * @competitiveCount()[cGroup] / @history.length
+        avg: -&gt;
+            @dep.depend()
+            if @history.length &gt; 0
+                roundValue (_.reduce @history, (total, value) -&gt; total+value)/@history.length
+        reset: -&gt;
+            @history = []
+            @bestGain = null
+            @worstGain = null
+            @dep.changed()
+    resetExperiment = =&gt;
+        
+        @items = createItems beta: @data.beta
+        @algorithm.reset?()
+        @algorithm.askOracle? @items
+        @numberOfItems.set @items.length
+        @currentItem.set @items.pop()
+
+    do reset = =&gt;
+        @gainHistory.reset()
+        resetExperiment()
+    
+    @ticker = new Ticker 
+        reset: =&gt;
+            reset()
+
+        turn: =&gt;
+            # 1. step: fetch new item
+            # 2. step: put it in knapsack
+            
+            item = @currentItem.get()
+            if item?
+                @algorithm.handle item
+                @currentItem.set @items.pop()
+            else
+                # no more items
+                
+                @gainHistory.add @algorithm.knapsack().gain()
+                resetExperiment()
+                
+
+
+Template.Experiment.helpers 
+    adviceBits: -&gt; Template.instance().algorithm.adviceBits.get()
+    act: -&gt; Template.instance().algorithm.act.get()
+    knapsack: -&gt; Template.instance().algorithm.knapsack()
+    ticker: -&gt; Template.instance().ticker
+    currentItem: -&gt;Template.instance().currentItem?.get()
+    gainHistory: -&gt; Template.instance().gainHistory
+    numberOfItems: -&gt; Template.instance().numberOfItems.get()
+    willMatch: -&gt; 
+        ctx = Template.instance()
+        ctx.currentItem?.get()?.value + ctx.algorithm.knapsack().gain() &lt;= ctx.algorithm.knapsack().size
+
+Template.Knapsack.helpers
+    totalWidth: -&gt;
+        @size * Constants.SCALE + 2
+    items: -&gt; 
+        @getItems()
+Template.KnapsackItem.helpers
+    width:  -&gt; 
+        @value * Constants.SCALE
+    color: -&gt;
+        hue = @value*360
+        &quot;hsl(#{hue}, 73%, 69%)&quot;
+
+Template.TickerGui.helpers
+    counter: -&gt; @ticker.getCounter()
+Template.TickerGui.events
+    &#39;click .btn-step&#39;: -&gt; @ticker.step()
+    &#39;click .btn-play&#39;: -&gt; 
+        @ticker.setTimeout 100
+        @ticker.play()
+    &#39;click .btn-play-fast&#39;: -&gt;
+        @ticker.setTimeout 0
+        @ticker.play()
+
+    &#39;click .btn-stop&#39;: -&gt; @ticker.stop()
+    &#39;click .btn-reset&#39;: -&gt; @ticker.reset()</code></pre>
+<div class="references">
+
+</div>
+
+\end{document}

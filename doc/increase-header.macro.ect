@@ -1,0 +1,11 @@
+<% 
+
+fs = require "fs"
+
+content = fs.readFileSync @file
+@level ?= 1
+@content = content.toString("utf-8").replace /\n#/g, "\n#"+Array(@level).join("#")
+
+%>
+
+<%- @content %>
