@@ -1,19 +1,43 @@
 
+body
+	background-image: url("bg.png")
 
 .knapsack
 	border: 2px solid blue
 	box-sizing: content-box
+	border-radius: 10px
+	overflow: hidden
+	text-align: center
 	.items
-	
+		background-color: #eee
 		height: 75px
 		.knapsack-item
 			float: right;
+			border-right: none
 .knapsack-item
 	border: 1px dashed black
 	height: 75px
 	box-sizing: border-box
 
+.currentItemContainer
+	position: relative
+	.matches
+		position: absolute
+		right: 60px
+		bottom: 16px
+		border-radius: 10px
+		font-size: 32px
+		&.yes
+			color: green
+		&.no
+			color: red
 
 .adviceBits
 	font-family: monospace
 		
+.table
+	td
+		text-align: right
+	th
+		text-align: left
+	

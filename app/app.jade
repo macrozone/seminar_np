@@ -1,60 +1,98 @@
 body
-	.container
-		+experiments
 
+	.container
+		.page-header
+			h1 Advice Complexity of the Online-Knapsack-Problem
+		+experiments
+head
+	title Advice Complexity of the Online-Knapsack-Problem
 template(name="experiments")
 	each experiments
 		+Experiment
 
 template(name="Experiment")
+	.panel.panel-default
+		.panel-heading
+			h2.panel-title {{name}}
+		.panel-body
+			{{description}}
+			.row
+				.col-xs-12.col-sm-5
+					table.table
+						tr 
+							th Number of experiments:
+							td {{gainHistory.size}}
+						tr 
+							th Average gain:
+							td {{gainHistory.avg}}
+						tr 
+							th Best gain:
+							td {{gainHistory.best}}
+						tr 
+							th Worst gain:
+							td {{gainHistory.worst}}
+						tr 
+							th 1-competitive:
+							td {{gainHistory.competitivePercentage "1-competitive"}} %
+						tr 
+							th 2-competitive:
+							td {{gainHistory.competitivePercentage "2-competitive"}} % 
+						tr 
+							th 4-competitive:
+							td {{gainHistory.competitivePercentage "4-competitive"}} %
+						tr 
+							th non-competitive:
+							td {{gainHistory.competitivePercentage "non-competitive"}} %
+			.row
+				.col-xs-12
+					+TickerGui ticker=ticker
+			.row
+				.col-xs-12.col-sm-5
+					table.table
+						tr 
+							th acts: 
+							td {{act}}
+						tr 
+							th adviceBits: 
+							td.adviceBits=adviceBits
+						tr 
+							th Number of items: 
+							td {{numberOfItems}}
 
-	h1 {{name}}
-	p {{description}}
-	p Number of experiments: {{yieldHistory.size}}
-	p Average yield: {{yieldHistory.avg}}
-	p Best yield: {{yieldHistory.best}}
-	p Worst yield: {{yieldHistory.worst}}
-	.row
-		.col-xs-12
-			+TickerGui ticker=ticker
-	.row
-		.col-xs-12
-			if act
-				p acts: {{act}}
-			p adviceBits: 
-				span.adviceBits=adviceBits
-			p Number of items: {{numberOfItems}}
+			.row
+				.currentItemContainer.col-xs-6
+					h4 Current item:
 
-	.row
-		.currentItemContainer.col-xs-6
-			h2 Current item:
-			if currentItem
-				p value: {{currentItem.value}}
-				+KnapsackItem(currentItem)
-				if willMatch
-					p will match
-				else
-					p will not match
+					if currentItem
+						p value: {{currentItem.value}}
 
-		.knapsackContainer.col-xs-6
-			+Knapsack knapsack
+						+KnapsackItem(currentItem)
+						if willMatch
+							.matches.yes
+								.glyphicon.glyphicon-arrow-right
+						else
+							.matches.no
+								.glyphicon.glyphicon-remove
+
+				.knapsackContainer.col-xs-6
+					+Knapsack knapsack
 
 
 template(name="Knapsack")
 	.knapsack(style="width: {{totalWidth}}px")
-		h2 knapsack
-		p yield: {{yield}}, items: {{items.length}}
+		h4 knapsack
+		p items: {{items.length}}, gain: {{gain}}
 		.items
+			
 			each items
 				+KnapsackItem
-				
+			
 
 template(name="KnapsackItem")
 	.knapsack-item(style="width: {{width}}px; background-color: {{color}}")
 
 template(name="TickerGui")
 	.ticker
-		p Counter: {{counter}}
 		.btn-group
 			button.btn.btn-step.btn-primary
 				.glyphicon.glyphicon-step-forward 
