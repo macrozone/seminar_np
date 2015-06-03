@@ -3,7 +3,7 @@ body
 	.container
 		.page-header
 			h1 Advice Complexity of the Online-Knapsack-Problem
-		+complexityChart
+		
 		+experiments
 		
 head
@@ -11,6 +11,15 @@ head
 template(name="experiments")
 	each experiments
 		+Experiment
+	h2 Online algorithms with advice
+	each experimentsWithAdvice
+		+Experiment
+	+competitivenessChart
+	h2 Randomized online algorithm
+	each randomExperiments
+		+Experiment
+		
+			
 
 template(name="Experiment")
 	.panel.panel-default
@@ -93,8 +102,16 @@ template(name="Knapsack")
 template(name="KnapsackItem")
 	.knapsack-item(style="width: {{width}}px; background-color: {{color}}")
 
-template(name="complexityChart")
-	+highchartsHelper chartId="test" chartWidth="100%" chartHeight="400px" chartObject=chartObject
+template(name="competitivenessChart")
+
+	
+	.panel.panel-default
+		.panel-heading
+			h2.panel-title Bits VS competitiveness
+		.panel-body
+			+highchartsHelper chartId="competitivenessChart" chartWidth="100%" chartHeight="400px" chartObject=chartObject
+			p (*) SLOG = 
+				img(src="slog.png" height="40px")
 
 template(name="TickerGui")
 	.ticker

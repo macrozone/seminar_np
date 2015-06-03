@@ -244,73 +244,71 @@
 <li>graph von bits / n, sprung-marken</li>
 </ul>
 <h1 id="online-knapsack-problem"><span class="header-section-number">6</span> Online-Knapsack-Problem</h1>
-<pre><code>Constants = 
-    SCALE: 300
-    KNAPSACK_SIZE: 1
-
-roundValue = (value) -&gt; Math.round(value*100)/100</code></pre>
-<h2 id="knapsack"><span class="header-section-number">6.1</span> Knapsack</h2>
-<p>The Knapsack will contain the objects and can return its gain (= the total of items' value)</p>
-<p></p>
+<h2 id="the-knapsack-problem"><span class="header-section-number">6.1</span> The knapsack-problem</h2>
+<p>Consider a knapsack with a certain capacity of weight (or volume) and a set of items, each with a value and a weight.</p>
+<p>Which subset of these items would you put into the knapsack to get the maximum possible total value respecting the capacity of the knapsack?</p>
+<p>This question is the so called knapsack-problem.</p>
+<h3 id="the-simple-knapsack-problem"><span class="header-section-number">6.1.1</span> The simple-knapsack-problem</h3>
+<p>In this paper, we only consider the so called <em>simple-knapsack-problem</em> where the value of one item is the same as its weight and where the knapsack has always a capacity of 1.</p>
+<p>We call the total value of all items in the knapsack as the <em>gain</em>.</p>
+<p>Let's define such a knapsack:</p>
 <pre><code>Knapsack = class 
-
     constructor: -&gt;
-        @size = Constants.KNAPSACK_SIZE
+        @size = 1
         @dep = new Tracker.Dependency
         @reset()
-
-    reset: -&gt;
-
-        @items = []
-        @dep.changed()
     
     fits: (item) -&gt; 
-        @gain() + item.value &lt;= Constants.KNAPSACK_SIZE
+        @gain() + item.value &lt;= @size
 
     addItem: (item) -&gt;
         if @fits item
             @items.push item
             @dep.changed()
+
     gain: -&gt; 
         roundValue _.reduce @getItems(), ((total, item) -&gt; total+item.value), 0
+    
     getItems: -&gt;
         @dep.depend()
         @items
 
-
-experiments = []
-
-Algorithm = class
+    reset: -&gt;
+        @items = []
+        @dep.changed()</code></pre>
+<h2 id="the-online-knapsack-problem"><span class="header-section-number">6.2</span> The Online-Knapsack-Problem</h2>
+<p>In the former <em>offline</em>-knapsack-problem, we know all items that we want to put in the knapsack. In the <em>online</em>-version of this problem, we do not know every item, but get the items one by one. We therefore have to decide after every item, whether we put the item in the knapsack or not.</p>
+<p>We create a base-algorithm for that:</p>
+<pre><code>Algorithm = class
     constructor: -&gt;
-        @adviceBits = new ReactiveVar
         @act = new ReactiveVar
         @_knapsack = new Knapsack
     knapsack: -&gt; @_knapsack
-    askOracle: (items) -&gt;
-        if @oracle?
-            @adviceBits.set @oracle items
-            delete item.isPartOfSolution for item in items
-    readAdviceBit: (index) -&gt;
-        @adviceBits.get()?[index]
-    reset: -&gt;
-        @_knapsack.reset()
-        @adviceBits.set null
-        @act.set null
 
     handle: (item) -&gt;
         if @decide item 
             @_knapsack.addItem item 
-            yes
+            return yes
         else
-            no
+            return no
+    decide: (item) -&gt;
+        # implement me and return yes or no
+
+    reset: -&gt;
+        @_knapsack.reset()
+        @act.set null
     doAct: (like) -&gt; @act.set like
     acts: (like) -&gt; @act.get() is like</code></pre>
+<p>What maximum gain would can we achieve and how would an online-algorithm perform in comparison with an optimal offline-algorithm, which would know every item?</p>
+<p>Let's try out.</p>
+<pre><code>experiments = []</code></pre>
 <p>Lets start with the greedy aproach. Here, we just take every item we get, if it fits:</p>
 <pre><code>decideGreedy = (item) -&gt; if @knapsack().fits item then yes else no</code></pre>
 <p>and we define an algorithm with it:</p>
 <pre><code>Greedy = class extends Algorithm
     decide: decideGreedy</code></pre>
-<p>The gain of this algorithm is at least 1-b, where beta is the size of the item with the highest value (weight). Lets do some experiments with it:</p>
+<p>The gain of this algorithm is at least 1-β, where β is the size of the item with the highest value (weight). The proof is simple: if we get this item with value β, the gain is certainly higher than β. If this item does not fit anymore in the knapsack, we will have at least 1-β gain.</p>
+<p>Lets do some experiments with it to verify this:</p>
 <pre><code>experiments.push
     name: -&gt; &quot;Greedy G&quot;
     description: -&gt; &quot;G archieves at least 1-beta, where beta is here #{@beta}&quot;
@@ -328,22 +326,47 @@ experiments.push
     description: -&gt; &quot;G archieves at least 1-beta, where beta is here #{@beta}&quot;
     beta: 0.8
     Algorithm: Greedy</code></pre>
-<h2 id="advice-bits"><span class="header-section-number">6.2</span> Advice bits</h2>
+<h2 id="online-algorithm-with-advice"><span class="header-section-number">6.3</span> Online-Algorithm with advice</h2>
+<pre><code>experimentsWithAdvice = []</code></pre>
 <p>Imaging you had an oracle, that would know all items that will come. How many bits of information from this oracle would you need to get an optimal solution? And for a given amount of these advice bits, how good would your algorithm perform?</p>
-<p>Let's start with the first question.</p>
+<p>We define such an algorithm as <em>online algorithm with advice</em>.</p>
+<p>Let <em>I</em> be an input of such an online algorithm <em>A</em> and Φ an (infinite) sequence of bits (1 or 0), called *advice bits. The online-algorithm can read a finit prefix of this sequence.</p>
+<p>The gain of this Algorithm is <em>gain(A^Φ(I))</em>.</p>
+<p>If we have <em>n</em> items in a solution and have read <em>s(n)</em> advice-bits while computing this solution in the algorithm we call <em>s(n)</em> the <em>advice-complexity</em>.</p>
+<p>If we compare the <em>gain</em> of this algorithm with the gain of an optimal offline algorithm OPT, we can define its <em>competitiveness</em>:</p>
+<p><em>gain(A^Φ(I))</em> &gt;= 1/c * gain(OPT(I)) - α*</p>
+<p>where α is a constant and we call this algorithm <em>c-competitive</em>. If <em>α = 0</em>, <em>A</em> is <em>strictly c-competitive</em>.</p>
+<p>Let's implement a base class for such an algorithm:</p>
+<pre><code>AlgorithmWithAdvice = class extends Algorithm
+    constructor: -&gt;
+        @adviceBits = new ReactiveVar
+        super
+    askOracle: (items) -&gt;
+        if @oracle?
+            @adviceBits.set @oracle items
+    oracle: (items) -&gt;
+        # implement me and return an array of advice-bits
+    readAdviceBit: (index) -&gt;
+        @adviceBits.get()?[index]
+    reset: -&gt;
+        super
+        @adviceBits.set null</code></pre>
+<h2 id="optimal-online-algorithm-with-advice"><span class="header-section-number">6.4</span> Optimal online algorithm with advice</h2>
+<p>Let's go back to the first question with the first question: how many advice bits do we have to read to get an optimal solution?</p>
 <p>Consider an algorithm with an oracle, that would give us a bit for every item coming with</p>
 <ul>
 <li>value 1 if the item is part of the solution</li>
 <li>value 0 if the item does not belong to the solution</li>
 </ul>
+<p>Obviously, we need n bits of advice for that, or n-1, because for the last item, we can assume that it is part of the optimal solution.</p>
 <p>We now define an algorithm for that.</p>
 <p>Note: The items are prepared in a way, that some are allready marked as solution. That makes it easier to define the oracle here:</p>
-<pre><code>TotalInformation = class extends Algorithm
+<pre><code>TotalInformation = class extends AlgorithmWithAdvice
     oracle: (items) -&gt;
         bits = []
         for item in items
             bits[item.index] = if item.isPartOfSolution then 1 else 0
-        # we do not need the last (n-1)
+        # we do not need the last bit
         bits.pop()
         return bits</code></pre>
 <p>The decision is now easy. If we have a bit (yes / no), we use it:</p>
@@ -351,14 +374,15 @@ experiments.push
         adviceBit = @readAdviceBit item.index
         if adviceBit? then adviceBit else yes</code></pre>
 <p>Lets do an experiment with it:</p>
-<pre><code>experiments.push
+<pre><code>experimentsWithAdvice.push
     name: -&gt; &quot;Total Information&quot;
     beta: 0.4
     Algorithm: TotalInformation</code></pre>
-<h2 id="advice-bit"><span class="header-section-number">6.3</span> 1 Advice bit</h2>
+<p>As <span class="citation">(<span class="citeproc-not-found" data-reference-id="onlineKnapsack"><strong>???</strong></span>)</span> states, any algorithm for the online simple knapsack problem needs at least n-1 bits to be optimal.</p>
+<h2 id="advice-bit"><span class="header-section-number">6.5</span> 1 Advice bit</h2>
 <p>What's the best gain if we had only 1 advice bit?</p>
 <p>Let's do an experiment where we have an oracle that gives us one bit:</p>
-<pre><code>AONE = class extends Algorithm
+<pre><code>AONE = class extends AlgorithmWithAdvice
     oracle: (allItems) -&gt; [ _.some allItems, (item) -&gt; item.value &gt; 0.5 ] # array with one bit</code></pre>
 <p>The bit tells us:</p>
 <ul>
@@ -378,36 +402,52 @@ experiments.push
             decideGreedy.call @, item
         else
             no</code></pre>
-<p>We do an experiment with a max size of one item of 0.55:</p>
-<pre><code>experiments.push
+<p>This algorithm is 2-competitive:</p>
+<ul>
+<li>If there is no item with weight &gt; 1/2, the gain is at least 1/2 as we have already seen in the greedy approach.</li>
+<li>On the other hand if such an item exists, the algorithm will wait for it and put it in, so it will get a gain of at least 1/2</li>
+</ul>
+<p>We do an experiment with a max size of one item of 0.55 to verify this:</p>
+<pre><code>experimentsWithAdvice.push
     name: &quot;AONE - with one advice bit&quot;
     description: &quot;AONE is 2-competitive&quot;
     beta: 0.55
     Algorithm: AONE</code></pre>
-<h2 id="random-online-algorithms"><span class="header-section-number">6.4</span> Random Online-Algorithms</h2>
+<p>This one single bit gives us an competitive-ratio of 2, but what happens if we increase the amount of bits? Can we achieve a better ratio?</p>
+<p>Unfortunatly, more advice bits does not give us a better competitive-ratio, at least for a sub-logarithmic amount <em>s(n)</em> of advice bits. Figure  shows the number of bits compared with the achieved competitive-ratio.</p>
+<p>There is a second jump at <em>SLOG</em>-bits, where competitiveness is 1+ε.</p>
+<div class="figure">
+<img src="competitivenessChart.png" alt="Number of bits VS competitiveness" />
+<p class="caption">Number of bits VS competitiveness</p>
+</div>
+<h2 id="randomized-online-algorithms"><span class="header-section-number">6.6</span> Randomized Online-Algorithms</h2>
+<pre><code>randomExperiments = []</code></pre>
 <p>Obviously in real online-problems, we do not have an omniscient oracle. But we can use the idea of the oracle and just guess the advice bits <em>randomly</em>.</p>
-<p>We can then estimate the competitiveness of this *randomized online-algorithm.</p>
-<h3 id="rone---aone-with-random-advice-bit"><span class="header-section-number">6.4.1</span> RONE - AONE with random advice bit</h3>
+<p>We can then estimate the competitiveness of this <em>randomized online-algorithm</em>.</p>
+<h3 id="rone---aone-with-random-advice-bit"><span class="header-section-number">6.6.1</span> RONE - AONE with random advice bit</h3>
 <p>Let's start with AONE from the previous experiment, but guess the adviceBit randomly:</p>
 <pre><code>RONE = class extends AONE
     oracle: -&gt;
         [Math.random() &lt; 0.5]</code></pre>
 <p>If we guess wrong, we might get a lower gain then 0.5 or even 0, if the adviceBit is 1 and we have no item with size &gt; 0.5.</p>
-<p>So while we have</p>
-<pre><code>experiments.push
+<p>So while we have a 2-competivenes in AONE, we have here a 4-competitivenes in expectation (in 50% of the cases, we are wrong).</p>
+<pre><code>randomExperiments.push
     name: &quot;RONE - one random bit&quot;
     description: &quot;Is 4-competitive in expectation&quot;
     beta: 0.55
-    Algorithm: RONE
-
-A1 = Greedy
-A2 = class extends Algorithm
+    Algorithm: RONE</code></pre>
+<h3 id="competivenes-with-1-advice-bit"><span class="header-section-number">6.6.2</span> 2-competivenes with 1 advice bit</h3>
+<p>The competitive-ratio of 4 is somewhat obvious, but suprisingly, we can also achieve a ratio of 2 with only 1 advice bit.</p>
+<p>Consider an algorithm that choses randomly between two algorithms A1 and A2. A1 is the greedy approach we already know:</p>
+<pre><code>A1 = Greedy</code></pre>
+<p>A2 internaly simulates A1 at the beginning:</p>
+<pre><code>A2 = class extends Algorithm
     reset: -&gt;
         super
         @a1 = new A1
-        @doAct &quot;simulateA1&quot;
-        
-    decide: (item) -&gt;
+        @doAct &quot;simulateA1&quot;</code></pre>
+<p>To decide wheter it will use the item or not, it first offers it to the simulated A1-Algorithm. As soon as A1 won't take the item anymore (A1' knapsack is full), A2 starts to act greedyly:</p>
+<pre><code>    decide: (item) -&gt;
         if @acts &quot;simulateA1&quot;
             if @a1.handle item
                 return no
@@ -415,10 +455,9 @@ A2 = class extends Algorithm
                 @doAct &quot;greedy&quot;
                 return @decide item
         else if @acts &quot;greedy&quot;
-            return decideGreedy.call @, item
-
-
-RONE2 = class extends Algorithm
+            return decideGreedy.call @, item</code></pre>
+<p>We now compose an algorithm &quot;RONE2&quot;, that choses randomly between A1 and A2:</p>
+<pre><code>RONE2 = class extends AlgorithmWithAdvice
     constructor: -&gt;
         @a1 = new A1
         @a2 = new A2
@@ -429,24 +468,34 @@ RONE2 = class extends Algorithm
         @a1.reset()
         @a2.reset()
     knapsack: -&gt; @algorithm().knapsack()
+    # handle decides and put the item in the knapsack
     handle: (item) -&gt;
         adviceBit = @readAdviceBit item.index
-        if adviceBit? # existance
+        if adviceBit? # existance of the first bit
             if adviceBit then @doAct &quot;A1&quot; else @doAct &quot;A2&quot;
         @algorithm().handle item
-
     algorithm: -&gt;
-        if @acts &quot;A1&quot; then @a1 else @a2
-
-
-experiments.push
+        if @acts &quot;A1&quot; then @a1 else @a2</code></pre>
+<p>We do now an experiment with it:</p>
+<pre><code>randomExperiments.push
     name: &quot;RONE2 - one random bit&quot;
     description: &quot;Is 2-competitive in expectation&quot;
     beta: 0.55
-    Algorithm: RONE2
-        
-createItems = ({beta, maxSize}) -&gt;
-    
+    Algorithm: RONE2</code></pre>
+<p>To show that this algorithm is 2-competitive in expectation, we consider two cases:</p>
+<ul>
+<li>If the sum of all items is less than the knapsack's capacity, A1 is optimal, while A2 gains 0. Because we chose randomly between the two algorithm, we have a 50% chance to get an optimal gain (or to get 0).</li>
+<li>If the sum is greater, the total gain of A1 and A2 is at least 1. Because we chose randomly between the two, we get a 0.5 gain in expecation.</li>
+</ul>
+<p>Considering both cases, we get a gain of 0.5 in expecation, so the algorithm is 2-competitive.</p>
+<h1 id="setup"><span class="header-section-number">7</span> Setup</h1>
+<p>The following code sets the experiments up. First, define some constants:</p>
+<pre><code>Constants = 
+    SCALE: 300
+
+roundValue = (value) -&gt; Math.round(value*100)/100</code></pre>
+<p>First, the creation of items:</p>
+<pre><code>createItems = ({beta, maxSize}) -&gt;
     items = []
     beta ?= 0.5
     maxSize ?= 1
@@ -465,20 +514,18 @@ createItems = ({beta, maxSize}) -&gt;
                 isPartOfSolution: yes
             # add the one that does not fit
             items.push {value}
-
-
             break
-
 
     items = _.shuffle items
     for item, index in items
         item.index = index
-    return items.reverse() # we later pop the elements out (from the end) because it is faster
-
-
-Template.experiments.helpers
+    # we later pop the elements out (from the end) because it is faster. So we reverse here:
+    return items.reverse() </code></pre>
+<p>Add the experiments to the template</p>
+<pre><code>Template.experiments.helpers
     experiments: -&gt; experiments
-
+    experimentsWithAdvice: -&gt; experimentsWithAdvice
+    randomExperiments: -&gt; randomExperiments
 
 Template.Experiment.onCreated -&gt;
     
@@ -565,7 +612,7 @@ Template.Experiment.onCreated -&gt;
 
 
 Template.Experiment.helpers 
-    adviceBits: -&gt; Template.instance().algorithm.adviceBits.get()
+    adviceBits: -&gt; Template.instance().algorithm.adviceBits?.get()
     act: -&gt; Template.instance().algorithm.act.get()
     knapsack: -&gt; Template.instance().algorithm.knapsack()
     ticker: -&gt; Template.instance().ticker
@@ -587,9 +634,49 @@ Template.KnapsackItem.helpers
     color: -&gt;
         hue = @value*360
         &quot;hsl(#{hue}, 73%, 69%)&quot;
+Template.competitivenessChart.helpers
+    chartObject: -&gt; 
+        legend: enabled: false
+        title: text: &quot;&quot;
+        yAxis: 
+            title: text: &quot;competitiveness&quot;
+            tickPositioner: -&gt; [1,1.1,1.9,2,3]
+            labels: 
+                formatter: -&gt;
+                    switch @value
+                        when 1 then &quot;optimal&quot;
+                        when 1.1 then &quot;1+ε-competitive&quot;
+                        when 1.9 then &quot;2-ε-competitive&quot;
+                        when 2 then &quot;2-competitive&quot;
+                        when 3 then &quot;non-competitive&quot;
+                        
+        xAxis:
+            title: text: &quot;bits&quot;
+            tickPositioner: -&gt;  [0,1,7,77,127]  
+            labels: 
+                rotation: -45
+                formatter: -&gt;
+                    switch @value
+                        #when 0 then &quot;0 bits&quot;
+                        when 1 then &quot;1 bit&quot;
+                        when 7 then &quot;log(n-1) bits&quot;
+                        when 77 then &quot;SLOG bits (*)&quot;
+                        when 127 then &quot;n-1 bits&quot;
+        series: [
+            type: &quot;area&quot;
+            step: &quot;left&quot;
+            data: [
+                (x: 0, y: 3, name: &quot;non-competitive&quot;)
+                (x: 1, y: 2, name: &quot;2-competitive&quot;)
+                (x: 7, y: 1.9, name: &quot;2-ε-competitive&quot;)
+                (x: 77, y: 1.1, name: &quot;1+ε-competitive&quot;)
+                (x: 127, y: 1, name: &quot;optimal&quot;)
+            ]
+        ]
 
 Template.TickerGui.helpers
     counter: -&gt; @ticker.getCounter()
+
 Template.TickerGui.events
     &#39;click .btn-step&#39;: -&gt; @ticker.step()
     &#39;click .btn-play&#39;: -&gt; 
@@ -598,7 +685,6 @@ Template.TickerGui.events
     &#39;click .btn-play-fast&#39;: -&gt;
         @ticker.setTimeout 0
         @ticker.play()
-
     &#39;click .btn-stop&#39;: -&gt; @ticker.stop()
     &#39;click .btn-reset&#39;: -&gt; @ticker.reset()</code></pre>
 <div class="references">

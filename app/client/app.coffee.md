@@ -1,6 +1,32 @@
 # Online-Knapsack-Problem 
 
+## Preamble
 
+Online problems and algorithms are problems where the inputs for the algorithm 
+are not known at the beginning, but appear one by one. This could
+be a job-scheduler in an operating system where you have to decide
+whether to do a job immediatly after it appears or wait for other, maybe shorter jobs.
+It could also be the decision whether to buy new ski-gear at the beginning 
+of the season or rent it every day, when you do not know, how the weather will be like during the season.
+Every day, it could snow, rain or be a perfect powder-day, but should you buy skis on one sunny day, when you do not know
+if there will be another nice day to go to the mountains?
+
+It would be nice to have some information about the future, something like an omniscient oracle, 
+that gives us a glimpse of whats coming next.
+
+We introduce such an oracle for online problems and try to find out, 
+how much information do we need from the oracle to get an optimal solution.
+
+In this interactive paper, we deal with the so called online knapsack problem, 
+where we have knapsack that we want to fill with a maximum amount of value 
+but respect the maximum capacity of it.
+
+### About this paper
+
+This paper is written as *literate CoffeeScript*-source-code[^fnLit] of a set of experiments with 
+these online-problems. 
+
+[^fnLit]: See http://coffeescript.org/#literate
 
 ## The knapsack-problem
 
@@ -94,9 +120,9 @@ and we define an algorithm with it:
 	Greedy = class extends Algorithm
 		decide: decideGreedy
 
-The gain of this algorithm is at least 1-β, where β is the size of the item with the highest value (weight). 
-The proof is simple: if we get this item with value β, the gain is certainly higher than β. 
-If this item does not fit anymore in the knapsack, we will have at least 1-β gain.
+The gain of this algorithm is at least $1-\beta$, where $\beta$ is the size of the item with the highest value (weight). 
+The proof is simple: if we get this item with value $\beta$, the gain is certainly higher than $\beta$. 
+If this item does not fit anymore in the knapsack, we will have at least $1-\beta$ gain.
 
 Lets do some experiments with it to verify this:
 
@@ -119,6 +145,8 @@ Lets do some experiments with it to verify this:
 		Algorithm: Greedy
 
 ## Online-Algorithm with advice
+	
+	experimentsWithAdvice = []
 
 Imaging you had an oracle, that would know all items that will come. 
 How many bits of information from this oracle would you need to get an optimal solution? 
@@ -126,11 +154,11 @@ And for a given amount of these advice bits, how good would your algorithm perfo
 
 We define such an algorithm as *online algorithm with advice*. 
 
-Let *I* be an input of such an online algorithm *A* and 
-Φ an (infinite) sequence of bits (1 or 0), called *advice bits. 
+Let $I$ be an input of such an online algorithm $A$ and 
+$\Phi$ an (infinite) sequence of bits (1 or 0), called *advice bits. 
 The  online-algorithm can read a finit prefix of this sequence.
 
-The gain of this Algorithm is *gain(A^Φ(I))*.
+The gain of this Algorithm is $gain(A^\Phi(I))$.
 
 If we have *n* items in a solution and have read *s(n)* advice-bits 
 while computing this solution in the algorithm we call *s(n)* the 
@@ -139,10 +167,10 @@ while computing this solution in the algorithm we call *s(n)* the
 If we compare the *gain* of this algorithm with the gain of an optimal offline algorithm OPT, 
 we can define its *competitiveness*:
 
-*gain(A^Φ(I))* >= 1/c * gain(OPT(I)) - α*
+$gain(A^\Phi(I))* \geq 1/c * gain(OPT(I)) - \alpha$
 
-where α is a constant and we call this algorithm *c-competitive*. 
-If *α = 0*, *A* is *strictly c-competitive*.
+where $\alpha$ is a constant and we call this algorithm *c-competitive*. 
+If $\alpha = 0$, *A* is *strictly c-competitive*.
 
 Let's implement a base class for such an algorithm:
 
@@ -196,7 +224,7 @@ The decision is now easy. If we have a bit (yes / no), we use it:
 
 Lets do an experiment with it:				
 			
-	experiments.push
+	experimentsWithAdvice.push
 		name: -> "Total Information"
 		beta: 0.4
 		Algorithm: TotalInformation
@@ -243,21 +271,28 @@ and put it in, so it will get a gain of at least 1/2
 
 We do an experiment with a max size of one item of 0.55 to verify this:
 
-	experiments.push
+	experimentsWithAdvice.push
 		name: "AONE - with one advice bit"
 		description: "AONE is 2-competitive"
 		beta: 0.55
 		Algorithm: AONE
 
+
 This one single bit gives us an competitive-ratio of 2, but what happens if we increase the amount of bits?
 Can we achieve a better ratio?
 
 Unfortunatly, more advice bits does not give us a better competitive-ratio, 
-at least for a sub-logarithmic amount *s(n)* of advice bits.
+at least for a sub-logarithmic amount *s(n)* of advice bits. 
+Figure \ref{competitivenessChart} shows the number of bits compared with the achieved
+competitive-ratio. 
 
+There is a second jump at *SLOG*-bits, where competitiveness is $1+\varepsilon$.
 
+![Number of bits VS competitiveness\label{competitivenessChart}](competitivenessChart.png)
 
 ## Randomized Online-Algorithms
+
+	randomExperiments = []
 
 Obviously in real online-problems, we do not have an omniscient oracle. 
 But we can use the idea of the oracle and just guess the advice bits *randomly*.
@@ -278,7 +313,7 @@ if the adviceBit is 1 and we have no item with size > 0.5.
 So while we have a 2-competivenes in AONE, we have here a 4-competitivenes in expectation
 (in 50% of the cases, we are wrong).
 
-	experiments.push
+	randomExperiments.push
 		name: "RONE - one random bit"
 		description: "Is 4-competitive in expectation"
 		beta: 0.55
@@ -337,7 +372,7 @@ We now compose an algorithm "RONE2", that choses randomly between A1 and A2:
 
 We do now an experiment with it:
 
-	experiments.push
+	randomExperiments.push
 		name: "RONE2 - one random bit"
 		description: "Is 2-competitive in expectation"
 		beta: 0.55
@@ -390,11 +425,12 @@ First, the creation of items:
 		# we later pop the elements out (from the end) because it is faster. So we reverse here:
 		return items.reverse() 
 
-Add the experiments to the 
+Add the experiments to the template
 
 	Template.experiments.helpers
 		experiments: -> experiments
-
+		experimentsWithAdvice: -> experimentsWithAdvice
+		randomExperiments: -> randomExperiments
 	
 	Template.Experiment.onCreated ->
 		
@@ -503,36 +539,42 @@ Add the experiments to the
 		color: ->
 			hue = @value*360
 			"hsl(#{hue}, 73%, 69%)"
-	Template.complexityChart.helpers
+	Template.competitivenessChart.helpers
 		chartObject: -> 
-			title: text: "Test"
+			legend: enabled: false
+			title: text: ""
 			yAxis: 
-				tickPositioner: -> [1,1.1,1.9,2]
+				title: text: "competitiveness"
+				tickPositioner: -> [1,1.1,1.9,2,3]
 				labels: 
 					formatter: ->
 						switch @value
 							when 1 then "optimal"
-							when 1.1 then "1+ε-competitive"
-							when 1.9 then "2-ε-competitive"
+							when 1.1 then "1+eps-competitive"
+							when 1.9 then "2-eps-competitive"
 							when 2 then "2-competitive"
+							when 3 then "non-competitive"
 							
 			xAxis:
+				title: text: "bits"
 				tickPositioner: ->	[0,1,7,77,127]	
-				labels: formatter: ->
-					switch @value
-						when 0 then "0 bits"
-						when 1 then "1 bit"
-						when 7 then "sub-logarithmic"
-						when 77 then "super-logarithmic"
-						when 127 then "n-1 bits"
+				labels: 
+					rotation: -45
+					formatter: ->
+						switch @value
+							#when 0 then "0 bits"
+							when 1 then "1 bit"
+							when 7 then "log(n-1) bits"
+							when 77 then "SLOG bits (*)"
+							when 127 then "n-1 bits"
 			series: [
 				type: "area"
 				step: "left"
 				data: [
-					#(x: 0, y: 5, name: "non-competitive")
+					(x: 0, y: 3, name: "non-competitive")
 					(x: 1, y: 2, name: "2-competitive")
-					(x: 7, y: 1.9, name: "2-ε-competitive")
-					(x: 77, y: 1.1, name: "1+ε-competitive")
+					(x: 7, y: 1.9, name: "2-eps-competitive")
+					(x: 77, y: 1.1, name: "1+eps-competitive")
 					(x: 127, y: 1, name: "optimal")
 				]
 			]
