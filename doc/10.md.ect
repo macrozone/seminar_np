@@ -1,5 +1,55 @@
 
 
- <% include 'increase-header.macro.ect', file: "../app/client/app.coffee.md", level: 1 %>
+---
+title: Online Knapsack Problem
+subtitle: Term Paper - Theoretical Computer Science
+author: Marco Wettstein
+geometry: margin=3cm
+date: 2015-06-03
+language: en
+references:
+- 	id: onlineKnapsack
+	title: "The Online knapsack problem: Advice and randomization"
+	author:
+	-	family: Böckenhauer
+		given: Hans-Joachim
+	-	family: Komm
+		given: Dennis
+	-	family: Kralovic
+		given:	Richard
+	- 	family: Rossmanith
+		given: Peter
+-	id: literate_coffee
+	URL: http://coffeescript.org/#literate
+	date: 2015-06-03
+	title: Literate CoffeeScript
+---
+
+\pagebreak
+
+<% include 'increase-header.macro.ect', file: "../app/client/app.coffee.md", level: 0 %>
+
+\pagebreak
+
+\appendix
+
+# Additional source files
+
+## client/app.jade (template)
+
+<% include 'listing.macro.ect', file: "../app/client/app.jade", type: "stylus", id: "app.jade" %>
+
+
+\pagebreak
+
+## client/app.styl (stylesheet)
+
+<% include 'listing.macro.ect', file: "../app/client/app.styl", type: "stylus", id: "app.styl" %>
+
+
+\pagebreak
+
+# References
+
 
 

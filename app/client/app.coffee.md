@@ -1,6 +1,6 @@
-# Online-Knapsack-Problem 
 
-## Preamble
+
+# Preamble
 
 Online problems and algorithms are problems where the inputs for the algorithm 
 are not known at the beginning, but appear one by one. This could
@@ -21,14 +21,21 @@ In this interactive paper, we deal with the so called online knapsack problem,
 where we have knapsack that we want to fill with a maximum amount of value 
 but respect the maximum capacity of it.
 
-### About this paper
+## About this paper
 
 This paper is written as *literate CoffeeScript*-source-code[^fnLit] of a set of experiments with 
-these online-problems. 
+these online-problem and it is running on *Meteor*[^fnMeteor]. 
+
+It is compiled using *pandoc*[^fnPandoc], which enables you to compile Markdown and many other formats to latex+pdf.
+
+A live version of the experiments is available at: http://online-knapsack.macrozone.ch, 
+the source-code is available on github: https://github.com/macrozone/seminar_np.
 
 [^fnLit]: See http://coffeescript.org/#literate
+[^fnMeteor]: https://www.meteor.com/
+[^fnPandoc]: http://pandoc.org/
 
-## The knapsack-problem
+# The knapsack-problem
 
 Consider a knapsack with a certain capacity of weight (or volume) 
 and a set of items, each with a value and a weight.
@@ -38,7 +45,7 @@ maximum possible total value respecting the capacity of the knapsack?
 
 This question is the so called knapsack-problem.
 
-### The simple-knapsack-problem
+## The simple-knapsack-problem
 
 In this paper, we only consider the so called *simple-knapsack-problem* where the value
 of one item is the same as its weight and where the knapsack has always a capacity of 1.
@@ -73,7 +80,7 @@ Let's define such a knapsack:
 			@dep.changed()
 
 
-## The Online-Knapsack-Problem
+# The Online-Knapsack-Problem
 
 In the former *offline*-knapsack-problem, we know all items that we want to put in the knapsack.
 In the *online*-version of this problem, we do not know every item, but get the items one by one.
@@ -144,10 +151,8 @@ Lets do some experiments with it to verify this:
 		beta: 0.8
 		Algorithm: Greedy
 
-## Online-Algorithm with advice
+# Online-Algorithm with advice
 	
-	experimentsWithAdvice = []
-
 Imaging you had an oracle, that would know all items that will come. 
 How many bits of information from this oracle would you need to get an optimal solution? 
 And for a given amount of these advice bits, how good would your algorithm perform?
@@ -223,7 +228,8 @@ The decision is now easy. If we have a bit (yes / no), we use it:
 			if adviceBit? then adviceBit else yes
 
 Lets do an experiment with it:				
-			
+	
+	experimentsWithAdvice = []
 	experimentsWithAdvice.push
 		name: -> "Total Information"
 		beta: 0.4
@@ -286,20 +292,19 @@ at least for a sub-logarithmic amount *s(n)* of advice bits.
 Figure \ref{competitivenessChart} shows the number of bits compared with the achieved
 competitive-ratio. 
 
-There is a second jump at *SLOG*-bits, where competitiveness is $1+\varepsilon$.
+There is a second jump at *SLOG*-bits, where competitiveness is $1+\varepsilon$. The proof for these intervals is found
+in the source [@onlineKnapsack].
 
 ![Number of bits VS competitiveness\label{competitivenessChart}](competitivenessChart.png)
 
-## Randomized Online-Algorithms
-
-	randomExperiments = []
+# Randomized online-algorithms
 
 Obviously in real online-problems, we do not have an omniscient oracle. 
 But we can use the idea of the oracle and just guess the advice bits *randomly*.
 
 We can then estimate the competitiveness of this *randomized online-algorithm*.
 
-### RONE - AONE with random advice bit
+## RONE - AONE with random advice bit
 
 Let's start with AONE from the previous experiment, but guess the adviceBit randomly:
 
@@ -313,13 +318,19 @@ if the adviceBit is 1 and we have no item with size > 0.5.
 So while we have a 2-competivenes in AONE, we have here a 4-competitivenes in expectation
 (in 50% of the cases, we are wrong).
 
+	randomExperiments = []
 	randomExperiments.push
 		name: "RONE - one random bit"
 		description: "Is 4-competitive in expectation"
 		beta: 0.55
 		Algorithm: RONE
 
-### 2-competivenes with 1 advice bit
+The experiment does not show this directly, because the items are prepared in a way, 
+that not all possible cases are evenly distributed. We expected that in 50% of the cases,
+the algorithm would guess wrongly and we would gain nothing, but in the experiment
+this probability is lower.
+
+## 2-competivenes with 1 advice bit
 
 The competitive-ratio of 4 is somewhat obvious, but suprisingly, we can also achieve a ratio of 2 with only 1 advice bit.
 
@@ -387,16 +398,48 @@ we get a 0.5 gain in expecation.
 
 Considering both cases, we get a gain of 0.5 in expecation, so the algorithm is 2-competitive.
 
+## The limit
+
+While we can achieve different levels of competitivenesses 
+by increasing the number of bits in online algorithms with advice,
+this is not the case in randomized-online-algorithms.
+
+As [@onlineKnapsack] states, there is no algorithm that performs better than 2-competitive
+in expecation. So 2-competiveness with 1 bit is the best we can achieve.
+
+
+# Whats next
+
+Resource augmentation:	If we allow the online algorithm to pack a little bit more ($\delta$) in the 
+knapsack than allowed, we can achieve up to ($2-\delta$)-competitiveness.
+
+The weighted case:	In this paper, we only considered items, where the value is equal to the 
+weight of the item. If we introduce a different weight of each item, we will see, that online algorithms
+for this weighted knapsack problem is only competitive for at least a logarithmic amount of
+advice bits.
+
+Randomized online algorithms for the weighted knapsack:	If we create a randomized online algorithm 
+for the weighted case, we see that these algorithms are not competitive at all, with and without 
+resource-augmentation.
+
+Further details and proof for these extensions can be found in the source [@onlineKnapsack] .
+
+
+\pagebreak
+
 # Setup
 
-The following code sets the experiments up. First, define some constants:
+The following code sets the experiments up. First, define some constants and helpers:
 
 	Constants = 
 		SCALE: 300
 
 	roundValue = (value) -> Math.round(value*100)/100
 
-First, the creation of items:
+## Create items
+
+The creation of items is done here. The items are prepared in a way, so that 
+we now which elements are part of the solution (for experiment "Total information").
 			
 	createItems = ({beta, maxSize}) ->
 		items = []
@@ -425,20 +468,26 @@ First, the creation of items:
 		# we later pop the elements out (from the end) because it is faster. So we reverse here:
 		return items.reverse() 
 
-Add the experiments to the template
+## Experiment templates
+
+Add the experiments to the template:
 
 	Template.experiments.helpers
 		experiments: -> experiments
 		experimentsWithAdvice: -> experimentsWithAdvice
 		randomExperiments: -> randomExperiments
 	
+Initialize it. We use some ReactiveVars to store the state of the experiment on the template
+instance.
+
 	Template.Experiment.onCreated ->
-		
 		@items = []
-		
 		@currentItem = new ReactiveVar
 		@numberOfItems = new ReactiveVar
 		@algorithm = new @data.Algorithm
+
+Lets define a history, where we can read some stats about the experiments from:
+
 		@gainHistory = 
 			history: []
 			dep: new Tracker.Dependency
@@ -460,7 +509,6 @@ Add the experiments to the template
 			competitiveCount: ->
 				@dep.depend()
 				_.countBy @history, (value) ->
-					
 					if value is 1
 						"1-competitive"
 					else if 0.5 <= value < 1
@@ -470,7 +518,6 @@ Add the experiments to the template
 					else
 						"non-competitive"
 					
-			
 			competitivePercentage: (cGroup)->
 				@dep.depend()
 				if @history.length > 0
@@ -484,8 +531,11 @@ Add the experiments to the template
 				@bestGain = null
 				@worstGain = null
 				@dep.changed()
+
+## Initialize and reset experiment
+
+
 		resetExperiment = =>
-			
 			@items = createItems beta: @data.beta
 			@algorithm.reset?()
 			@algorithm.askOracle? @items
@@ -495,26 +545,25 @@ Add the experiments to the template
 		do reset = =>
 			@gainHistory.reset()
 			resetExperiment()
-		
-		@ticker = new Ticker 
-			reset: =>
-				reset()
 
-			turn: =>
-				# 1. step: fetch new item
-				# 2. step: put it in knapsack
-				
+## Running the experiment
+
+The Ticker is a package, that can run a callback in a loop. 
+We can run it step-by-step or fast.
+
+		@ticker = new Ticker 
+			reset: => reset()
+			turn: =>	
 				item = @currentItem.get()
 				if item?
 					@algorithm.handle item
 					@currentItem.set @items.pop()
 				else
 					# no more items
-					
 					@gainHistory.add @algorithm.knapsack().gain()
 					resetExperiment()
 					
-
+Expose the state to the template:
 	
 	Template.Experiment.helpers 
 		adviceBits: -> Template.instance().algorithm.adviceBits?.get()
@@ -533,12 +582,18 @@ Add the experiments to the template
 			@size * Constants.SCALE + 2
 		items: -> 
 			@getItems()
+
 	Template.KnapsackItem.helpers
 		width:  -> 
 			@value * Constants.SCALE
 		color: ->
 			hue = @value*360
 			"hsl(#{hue}, 73%, 69%)"
+
+## Chart
+
+The chart from \ref{competitivenessChart} is created by this code:
+			
 	Template.competitivenessChart.helpers
 		chartObject: -> 
 			legend: enabled: false
@@ -578,6 +633,8 @@ Add the experiments to the template
 					(x: 127, y: 1, name: "optimal")
 				]
 			]
+
+## GUI for the Ticker
 
 	Template.TickerGui.helpers
 		counter: -> @ticker.getCounter()
