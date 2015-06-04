@@ -313,7 +313,9 @@ competitive-ratio.
 There is a second jump at *SLOG*-bits, where competitiveness is $1+\varepsilon$. The proof for these intervals is found
 in the source [@onlineKnapsack, p. 65].
 
-![Number of bits VS competitiveness\label{competitivenessChart}](competitivenessChart.png)
+![Number of bits VS competitiveness. 
+There are several jumps in the competitive-ratio
+\label{competitivenessChart}](competitivenessChart.png)
 
 # Randomized online algorithms
 
@@ -346,11 +348,19 @@ So while we have a 2-competivenes in AONE, we have here a 4-competitivenes in ex
 The experiment does not show this directly, because the items are prepared in a way, 
 that not all possible cases are evenly distributed. We expected that in 50% of the cases,
 the algorithm would guess wrongly and we would gain nothing, but in the experiment
-this probability is lower.
+this probability is lower (See \ref{fig_rone}).
+
+![In the experiment with RONE, the probability of gaining nothing is lower than 50%. 
+It's not obvious, that this algorithm is 4-competitive in expectation. 
+In fact, in never performs in the range of a 4-competitive-algorithm (from 0.25-0.5 gain), 
+because it either performs better than 0.5 (2-competitive) or gains nothing. 
+But in expectation (considering the random-variable) the competitive-ratio would be 4. \label{fig_rone}](rone.png)
+
+\pagebreak
 
 ## 2-competivenes with 1 advice bit
 
-The competitive-ratio of 4 is somewhat obvious, but suprisingly, we can also achieve a ratio of 2 with only 1 advice bit.
+The competitive-ratio of 4 is somewhat obvious. But suprisingly, we can also achieve a ratio of 2 with only 1 advice bit.
 
 Consider an algorithm that choses randomly between two algorithms A1 and A2. A1 is the greedy approach we already know:
 
@@ -428,15 +438,15 @@ in expecation. So 2-competiveness with 1 bit is the best we can achieve.
 
 # Whats next
 
-Resource augmentation:	If we allow the online algorithm to pack a little bit more ($\delta$) in the 
+**Resource augmentation**:	If we allow the online algorithm to pack a little bit more ($\delta$) in the 
 knapsack than allowed, we can achieve up to ($2-\delta$)-competitiveness.
 
-The weighted case:	In this paper, we only considered items, where the value is equal to the 
+**The weighted case**:	In this paper, we only considered items, where the value is equal to the 
 weight of the item. If we introduce a different weight of each item, we will see, that online algorithms
 for this weighted knapsack problem is only competitive for at least a logarithmic amount of
 advice bits.
 
-Randomized online algorithms for the weighted knapsack:	If we create a randomized online algorithm 
+**Randomized online algorithms for the weighted knapsack**:	If we create a randomized online algorithm 
 for the weighted case, we see that these algorithms are not competitive at all, with and without 
 resource-augmentation.
 
@@ -447,7 +457,9 @@ Further details and proof for these extensions can be found in the source [@onli
 
 # Setup
 
-The following code sets the experiments up. First, define some constants and helpers:
+The following code sets the experiments up and defines templates, etc.
+
+First, define some constants and helpers:
 
 	Constants = 
 		SCALE: 300
@@ -457,7 +469,9 @@ The following code sets the experiments up. First, define some constants and hel
 ## Create items
 
 The creation of items is done here. The items are prepared in a way, so that 
-we now which elements are part of the solution (for experiment "Total information").
+we know which elements are part of the solution (for experiment "Total information").
+This makes it easier to setup a oracle later. Of course, we should not use this information
+directly when deciding an item.
 			
 	createItems = ({beta, maxSize}) ->
 		items = []
