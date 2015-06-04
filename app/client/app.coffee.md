@@ -5,7 +5,9 @@
 Online problems and algorithms are problems where the inputs for the algorithm 
 are not known at the beginning, but appear one by one. This could
 be a job-scheduler in an operating system where you have to decide
-whether to do a job immediatly after it appears or wait for other, maybe shorter jobs.
+whether to do a job immediatly after it appears or wait for other, maybe shorter jobs. It can be a memory-management
+that handles paging (also operation systems).
+
 It could also be the decision whether to buy new ski-gear at the beginning 
 of the season or rent it every day, when you do not know, how the weather will be like during the season.
 Every day, it could snow, rain or be a perfect powder-day, but should you buy skis on one sunny day, when you do not know
@@ -15,9 +17,9 @@ It would be nice to have some information about the future, something like an om
 that gives us a glimpse of whats coming next.
 
 We introduce such an oracle for online problems and try to find out, 
-how much information do we need from the oracle to get an optimal solution.
+how much information do we need from this oracle to get an optimal solution.
 
-In this interactive paper, we deal with the so called online knapsack problem, 
+In this interactive paper, we deal with the so called online simple knapsack problem, 
 where we have knapsack that we want to fill with a maximum amount of value 
 but respect the maximum capacity of it.
 
@@ -186,7 +188,12 @@ we can define its *competitiveness*:
 $gain(A^\Phi(I))* \geq \frac{1}{c} * gain(\mathrm{OPT}(I)) - \alpha$
 
 where $\alpha$ is a constant and we call this algorithm *c-competitive*. 
-If $\alpha = 0$, *A* is *strictly c-competitive*.
+If $\alpha = 0$, *A* is *strictly c-competitive*. 
+
+The param $\alpha$ is needed when the length of the input may vary 
+and the algorithm could be bad for short, but perform well for long inputs [See also @online_paging, p.4].
+For our knapsack problem, we can set $\alpha = 0$ and only consider *strict-competitiveness*, because 
+the capacity of the knapsack is bound to 1 [@onlineKnapsack, p. 64].
 
 Let's implement a base class for such an algorithm:
 
@@ -246,7 +253,7 @@ Lets do an experiment with it:
 		beta: 0.4
 		Algorithm: TotalInformation
 
-As [@onlineKnapsack] states, any algorithm for the online simple knapsack problem 
+As [@onlineKnapsack, p.64] states, any algorithm for the online simple knapsack problem 
 needs at least n-1 bits to be optimal.
 
 ## 1 Advice bit
@@ -304,7 +311,7 @@ Figure \ref{competitivenessChart} shows the number of bits compared with the ach
 competitive-ratio. 
 
 There is a second jump at *SLOG*-bits, where competitiveness is $1+\varepsilon$. The proof for these intervals is found
-in the source [@onlineKnapsack].
+in the source [@onlineKnapsack, p. 65].
 
 ![Number of bits VS competitiveness\label{competitivenessChart}](competitivenessChart.png)
 
