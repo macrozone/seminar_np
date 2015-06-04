@@ -24,7 +24,7 @@ but respect the maximum capacity of it.
 ## About this paper
 
 This paper is written as *literate CoffeeScript*-source-code[^fnLit] of a set of experiments with 
-these online-problem and it is running on *Meteor*[^fnMeteor]. 
+these online problem running on *Meteor*[^fnMeteor]. 
 
 It is compiled using *pandoc*[^fnPandoc], which enables you to compile Markdown and many other formats to latex+pdf.
 
@@ -35,7 +35,9 @@ the source-code is available on github: https://github.com/macrozone/seminar_np.
 [^fnMeteor]: https://www.meteor.com/
 [^fnPandoc]: http://pandoc.org/
 
-# The knapsack-problem
+\pagebreak
+
+# The knapsack problem
 
 Consider a knapsack with a certain capacity of weight (or volume) 
 and a set of items, each with a value and a weight.
@@ -43,11 +45,15 @@ and a set of items, each with a value and a weight.
 Which subset of these items would you put into the knapsack to get the 
 maximum possible total value respecting the capacity of the knapsack?
 
-This question is the so called knapsack-problem.
+This question is the so called knapsack problem.
 
-## The simple-knapsack-problem
+![The knapsack problem (Source: wikipedia) \label{fig_knapsack}](knapsack.png)
 
-In this paper, we only consider the so called *simple-knapsack-problem* where the value
+\pagebreak
+
+## The simple-knapsack problem
+
+In this paper, we only consider the so called *simple-knapsack problem* where the value
 of one item is the same as its weight and where the knapsack has always a capacity of 1.
 
 We call the total value of all items in the knapsack as the *gain*.
@@ -80,9 +86,9 @@ Let's define such a knapsack:
 			@dep.changed()
 
 
-# The Online-Knapsack-Problem
+## The Online-Knapsack-Problem
 
-In the former *offline*-knapsack-problem, we know all items that we want to put in the knapsack.
+In the former *offline*-knapsack problem, we know all items that we want to put in the knapsack.
 In the *online*-version of this problem, we do not know every item, but get the items one by one.
 We therefore have to decide after every item, whether we put the item in the knapsack or not.
 
@@ -151,6 +157,11 @@ Lets do some experiments with it to verify this:
 		beta: 0.8
 		Algorithm: Greedy
 
+![The greedy approach will at least gain $1-\beta$ \label{fig_greedy}](greedy.png)
+
+
+\pagebreak
+
 # Online-Algorithm with advice
 	
 Imaging you had an oracle, that would know all items that will come. 
@@ -172,7 +183,7 @@ while computing this solution in the algorithm we call *s(n)* the
 If we compare the *gain* of this algorithm with the gain of an optimal offline algorithm OPT, 
 we can define its *competitiveness*:
 
-$gain(A^\Phi(I))* \geq 1/c * gain(OPT(I)) - \alpha$
+$gain(A^\Phi(I))* \geq \frac{1}{c} * gain(\mathrm{OPT}(I)) - \alpha$
 
 where $\alpha$ is a constant and we call this algorithm *c-competitive*. 
 If $\alpha = 0$, *A* is *strictly c-competitive*.
@@ -297,9 +308,9 @@ in the source [@onlineKnapsack].
 
 ![Number of bits VS competitiveness\label{competitivenessChart}](competitivenessChart.png)
 
-# Randomized online-algorithms
+# Randomized online algorithms
 
-Obviously in real online-problems, we do not have an omniscient oracle. 
+Obviously in real online problems, we do not have an omniscient oracle. 
 But we can use the idea of the oracle and just guess the advice bits *randomly*.
 
 We can then estimate the competitiveness of this *randomized online-algorithm*.
@@ -402,7 +413,7 @@ Considering both cases, we get a gain of 0.5 in expecation, so the algorithm is 
 
 While we can achieve different levels of competitivenesses 
 by increasing the number of bits in online algorithms with advice,
-this is not the case in randomized-online-algorithms.
+this is not the case in randomized online algorithms.
 
 As [@onlineKnapsack] states, there is no algorithm that performs better than 2-competitive
 in expecation. So 2-competiveness with 1 bit is the best we can achieve.
