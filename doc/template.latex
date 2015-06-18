@@ -155,7 +155,7 @@ $endfor$
 $if(title)$
 \maketitle
 \begin{center}
-  % \includegraphics[width=8cm]{../img/title.png}
+  \includegraphics[width=8cm]{knapsack.png}
  \end{center}
 
 \pagebreak
